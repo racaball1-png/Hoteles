@@ -4,10 +4,12 @@
  */
 package dao;
 
-/**
- *
- * @author acabi
- */
-public class NewClass {
-    
+import java.util.List;
+
+public interface CrudDAO<T> {
+    List<T> listar();
+    T obtenerPorId(int id);
+    Boolean crear(T objeto);
+    Boolean actualizar(T objeto);
+    Boolean eliminar(int id);
 }

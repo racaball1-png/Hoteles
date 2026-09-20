@@ -4,49 +4,45 @@
  */
 package modelo;
 
-import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
-@Entity
 public class Reservacion {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idReservacion;
-
-    @ManyToOne
-    @JoinColumn(name = "id_cliente")
-    private Cliente cliente;
-
-    @ManyToOne
-    @JoinColumn(name = "id_trabajador")
-    private Trabajador trabajador;
-
-    @ManyToOne
-    @JoinColumn(name = "id_room")
-    private Habitacion habitacion;
-
-    @ManyToOne
-    @JoinColumn(name = "id_estado_reserva")
-    private EstadoReserva estadoReserva;
-
-    private LocalDateTime fechaReserva;
-    private Integer cantidadPersona; // Corregido de LocalDateTime a Integer
+    private int idReservacion;
+    private int idCliente;
+    private int idTrabajador;
+    private int idRoom;
+    private int idEstadoReserva;
+    private int cantidadPersonas;
     private LocalDateTime fechaEntrada;
     private LocalDateTime fechaSalida;
-    private Double montoTotal;
+    private double montoTotal;
 
-    public Reservacion() {
-    }
+    public Reservacion() {}
 
-    public Reservacion(Cliente cliente, Trabajador trabajador, Habitacion habitacion, EstadoReserva estadoReserva, LocalDateTime fechaReserva, Integer cantidadPersona, LocalDateTime fechaEntrada, LocalDateTime fechaSalida, Double montoTotal) {
-        this.cliente = cliente;
-        this.trabajador = trabajador;
-        this.habitacion = habitacion;
-        this.estadoReserva = estadoReserva;
-        this.fechaReserva = fechaReserva;
-        this.cantidadPersona = cantidadPersona;
-        this.fechaEntrada = fechaEntrada;
-        this.fechaSalida = fechaSalida;
-        this.montoTotal = montoTotal;
-    }
+    public int getIdReservacion() { return idReservacion; }
+    public void setIdReservacion(int idReservacion) { this.idReservacion = idReservacion; }
+
+    public int getIdCliente() { return idCliente; }
+    public void setIdCliente(int idCliente) { this.idCliente = idCliente; }
+
+    public int getIdTrabajador() { return idTrabajador; }
+    public void setIdTrabajador(int idTrabajador) { this.idTrabajador = idTrabajador; }
+
+    public int getIdRoom() { return idRoom; }
+    public void setIdRoom(int idRoom) { this.idRoom = idRoom; }
+
+    public int getIdEstadoReserva() { return idEstadoReserva; }
+    public void setIdEstadoReserva(int idEstadoReserva) { this.idEstadoReserva = idEstadoReserva; }
+
+    public int getCantidadPersonas() { return cantidadPersonas; }
+    public void setCantidadPersonas(int cantidadPersonas) { this.cantidadPersonas = cantidadPersonas; }
+
+    public LocalDateTime getFechaEntrada() { return fechaEntrada; }
+    public void setFechaEntrada(LocalDateTime fechaEntrada) { this.fechaEntrada = fechaEntrada; }
+
+    public LocalDateTime getFechaSalida() { return fechaSalida; }
+    public void setFechaSalida(LocalDateTime fechaSalida) { this.fechaSalida = fechaSalida; }
+
+    public double getMontoTotal() { return montoTotal; }
+    public void setMontoTotal(double montoTotal) { this.montoTotal = montoTotal; }
 }

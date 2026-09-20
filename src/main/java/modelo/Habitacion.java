@@ -4,36 +4,27 @@
  */
 package modelo;
 
-import jakarta.persistence.*;
-
-@Entity
 public class Habitacion {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idRoom;
+    private int id;
+    private int numero;
+    private String tipo;
+    private double precio;
+    private String estado;
 
-    private String numeroHabitacion;
-    private Double precioNoche;
-    private Integer capacidadPersona;
-    private Integer nivelPiso;
+    public Habitacion() {}
 
-    @ManyToOne
-    @JoinColumn(name = "id_tipo_habitacion")
-    private TipoHabitacion tipoHabitacion;
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
 
-    @ManyToOne
-    @JoinColumn(name = "id_estado_habitacion")
-    private EstadoHabitacion estadoHabitacion;
+    public int getNumero() { return numero; }
+    public void setNumero(int numero) { this.numero = numero; }
 
-    public Habitacion() {
-    }
+    public String getTipo() { return tipo; }
+    public void setTipo(String tipo) { this.tipo = tipo; }
 
-    public Habitacion(String numeroHabitacion, Double precioNoche, Integer capacidadPersona, Integer nivelPiso, TipoHabitacion tipoHabitacion, EstadoHabitacion estadoHabitacion) {
-        this.numeroHabitacion = numeroHabitacion;
-        this.precioNoche = precioNoche;
-        this.capacidadPersona = capacidadPersona;
-        this.nivelPiso = nivelPiso;
-        this.tipoHabitacion = tipoHabitacion;
-        this.estadoHabitacion = estadoHabitacion;
-    }
+    public double getPrecio() { return precio; }
+    public void setPrecio(double precio) { this.precio = precio; }
+
+    public String getEstado() { return estado; }
+    public void setEstado(String estado) { this.estado = estado; }
 }
