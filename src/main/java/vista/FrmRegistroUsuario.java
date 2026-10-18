@@ -1,14 +1,16 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package vista;
+
 import dao.ClienteDAO;
 import dao.TrabajadorDAO;
-import dao.UsuarioDAO;
+import modelo.Persona;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author acabi
@@ -19,14 +21,21 @@ public class FrmRegistroUsuario extends JFrame {
     private static final Color COLOR_FONDO = new Color(247, 246, 242);
     private static final Color COLOR_TEXTO = new Color(30, 47, 32);
 
-    private JTextField txtNombre, txtApellido, txtCorreo, txtTelefono, txtDpi, txtNit;
+    private JTextField txtNombre, txtApellido, txtCorreo, txtDpi, txtNit;
     private JComboBox<String> cbxRol;
     private JPasswordField txtPassword, txtConfirmPassword;
     private JButton btnRegistrar, btnVolver;
 
-    private boolean esModoAdmin; // true: viene de Registro y Roles | false: viene de Login (autoregistro)
+    // Componentes para Múltiples Teléfonos (Examen UM
+    private JTextField txtNumeroTel;
+    private JComboBox<String> cmbTipoTel;
+    private JButton btnAgregarTel;
+    private DefaultTableModel modelTelefonos;
+    private JTable tblTelefonos;
 
-    // Constructor por defecto (Habilita selección de roles)
+    private boolean esModoAdmin; // true: Administrador | false: Registro desde Login
+
+    // Constructor por defecto
     public FrmRegistroUsuario() {
         this(true);
     }
@@ -40,7 +49,7 @@ public class FrmRegistroUsuario extends JFrame {
     }
 
     private void configurarVentana() {
-        setSize(520, 680);
+        setSize(560, 780);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
         getContentPane().setBackground(COLOR_FONDO);
@@ -52,19 +61,19 @@ public class FrmRegistroUsuario extends JFrame {
         JPanel pnlHeader = new JPanel();
         pnlHeader.setBackground(COLOR_PRIMARIO);
         pnlHeader.setBorder(new EmptyBorder(15, 20, 15, 20));
-        
+
         JLabel lblTitulo = new JLabel(esModoAdmin ? "Crear Cuenta de Usuario" : "Crear Cuenta de Cliente");
         lblTitulo.setFont(new Font("Georgia", Font.BOLD, 20));
         lblTitulo.setForeground(Color.WHITE);
         pnlHeader.add(lblTitulo);
-        
+
         add(pnlHeader, BorderLayout.NORTH);
 
         // --- FORMULARIO CENTRAL ---
         JPanel pnlFormulario = new JPanel(new GridBagLayout());
         pnlFormulario.setBackground(COLOR_FONDO);
         pnlFormulario.setBorder(new EmptyBorder(15, 25, 15, 25));
-        
+
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.insets = new Insets(6, 6, 6, 6);
@@ -73,7 +82,6 @@ public class FrmRegistroUsuario extends JFrame {
         txtNombre = new JTextField();
         txtApellido = new JTextField();
         txtCorreo = new JTextField();
-        txtTelefono = new JTextField();
         txtDpi = new JTextField();
         txtNit = new JTextField("C/F");
 
@@ -81,7 +89,6 @@ public class FrmRegistroUsuario extends JFrame {
         cbxRol.setFont(new Font("SansSerif", Font.BOLD, 12));
         cbxRol.setBackground(Color.WHITE);
 
-        // Si viene del Login, se deshabilita la selección y queda fijo como Cliente
         if (!esModoAdmin) {
             cbxRol.setSelectedItem("Cliente");
             cbxRol.setEnabled(false);
@@ -90,14 +97,49 @@ public class FrmRegistroUsuario extends JFrame {
         txtPassword = new JPasswordField();
         txtConfirmPassword = new JPasswordField();
 
+        // --- COMPONENTES DE TELÉFONO MULTIPLE ---
+        txtNumeroTel = new JTextField(10);
+        cmbTipoTel = new JComboBox<>(new String[]{"Personal", "Trabajo", "Casa", "Otro"});
+        btnAgregarTel = new JButton("+ Agregar");
+        btnAgregarTel.setBackground(new Color(41, 128, 185));
+        btnAgregarTel.setForeground(Color.WHITE);
+
+        modelTelefonos = new DefaultTableModel(new String[]{"Número", "Tipo"}, 0);
+        tblTelefonos = new JTable(modelTelefonos);
+        JScrollPane scrollTablaTel = new JScrollPane(tblTelefonos);
+        scrollTablaTel.setPreferredSize(new Dimension(300, 90));
+
+        // Evento para agregar teléfono a la tabla visual
+        btnAgregarTel.addActionListener(e -> {
+            String num = txtNumeroTel.getText().trim();
+            String tipo = (String) cmbTipoTel.getSelectedItem();
+            if (!num.isEmpty()) {
+                modelTelefonos.addRow(new Object[]{num, tipo});
+                txtNumeroTel.setText("");
+            } else {
+                JOptionPane.showMessageDialog(this, "Ingrese un número de teléfono válido.", "Atención", JOptionPane.WARNING_MESSAGE);
+            }
+        });
+
+        // Panel horizontal para ingresar teléfono + tipo + botón
+        JPanel pnlInputTel = new JPanel(new FlowLayout(FlowLayout.LEFT, 5, 0));
+        pnlInputTel.setBackground(COLOR_FONDO);
+        pnlInputTel.add(txtNumeroTel);
+        pnlInputTel.add(cmbTipoTel);
+        pnlInputTel.add(btnAgregarTel);
+
         int row = 0;
         agregarCampo(pnlFormulario, "Rol asignado *:", cbxRol, gbc, row++);
         agregarCampo(pnlFormulario, "Nombre *:", txtNombre, gbc, row++);
         agregarCampo(pnlFormulario, "Apellido *:", txtApellido, gbc, row++);
         agregarCampo(pnlFormulario, "Correo Electrónico *:", txtCorreo, gbc, row++);
-        agregarCampo(pnlFormulario, "Teléfono:", txtTelefono, gbc, row++);
         agregarCampo(pnlFormulario, "DPI / Identificación *:", txtDpi, gbc, row++);
         agregarCampo(pnlFormulario, "NIT:", txtNit, gbc, row++);
+        
+        // Sección Teléfonos
+        agregarCampo(pnlFormulario, "Agregar Teléfono:", pnlInputTel, gbc, row++);
+        agregarCampo(pnlFormulario, "Lista de Teléfonos:", scrollTablaTel, gbc, row++);
+
         agregarCampo(pnlFormulario, "Contraseña *:", txtPassword, gbc, row++);
         agregarCampo(pnlFormulario, "Confirmar Contraseña *:", txtConfirmPassword, gbc, row++);
 
@@ -114,7 +156,6 @@ public class FrmRegistroUsuario extends JFrame {
         btnVolver.addActionListener(e -> dispose());
 
         btnRegistrar = new JButton("Registrar Usuario");
-        btnRegistrar.setUI(new javax.swing.plaf.basic.BasicButtonUI());
         btnRegistrar.setFont(new Font("SansSerif", Font.BOLD, 12));
         btnRegistrar.setBackground(COLOR_PRIMARIO);
         btnRegistrar.setForeground(Color.WHITE);
@@ -129,7 +170,7 @@ public class FrmRegistroUsuario extends JFrame {
 
     private void agregarCampo(JPanel panel, String etiqueta, JComponent componente, GridBagConstraints gbc, int fila) {
         gbc.gridy = fila;
-        
+
         gbc.gridx = 0;
         gbc.weightx = 0.35;
         JLabel lbl = new JLabel(etiqueta);
@@ -147,12 +188,10 @@ public class FrmRegistroUsuario extends JFrame {
         String nombre = txtNombre.getText().trim();
         String apellido = txtApellido.getText().trim();
         String correo = txtCorreo.getText().trim();
-        String telefono = txtTelefono.getText().trim();
         String dpi = txtDpi.getText().trim();
-        String nit = txtNit.getText().trim();
-        String rolSeleccionado = (String) cbxRol.getSelectedItem();
         String pass = new String(txtPassword.getPassword());
         String confirmPass = new String(txtConfirmPassword.getPassword());
+        String rolSeleccionado = (String) cbxRol.getSelectedItem();
 
         if (nombre.isEmpty() || apellido.isEmpty() || correo.isEmpty() || dpi.isEmpty() || pass.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Por favor complete todos los campos obligatorios (*).", "Campos Requeridos", JOptionPane.WARNING_MESSAGE);
@@ -164,17 +203,24 @@ public class FrmRegistroUsuario extends JFrame {
             return;
         }
 
+        // 1. Extraer la lista de teléfonos agregados en la tabla
+        List<Persona.Telefono> listaTelefonos = new ArrayList<>();
+        for (int i = 0; i < modelTelefonos.getRowCount(); i++) {
+            String num = (String) modelTelefonos.getValueAt(i, 0);
+            String tipo = (String) modelTelefonos.getValueAt(i, 1);
+            listaTelefonos.add(new Persona.Telefono(num, tipo));
+        }
+
         boolean exito = false;
 
         try {
             if ("Cliente".equalsIgnoreCase(rolSeleccionado)) {
                 ClienteDAO clienteDAO = new ClienteDAO();
-                // Llama al método de inserción de cliente en tu BD
-                exito = clienteDAO.insertarCliente(nombre, apellido, correo, telefono, dpi, nit, pass);
+                exito = clienteDAO.insertarClienteConTelefonos(nombre, apellido, correo, dpi, pass, listaTelefonos);
             } else if ("Trabajador".equalsIgnoreCase(rolSeleccionado)) {
                 TrabajadorDAO trabajadorDAO = new TrabajadorDAO();
-                // Llama al método de inserción de trabajador en tu BD
-                exito = trabajadorDAO.insertarTrabajador(nombre, apellido, correo, telefono, dpi, pass);
+                String primerTel = listaTelefonos.isEmpty() ? "" : listaTelefonos.get(0).getNumero();
+                exito = trabajadorDAO.insertarTrabajador(nombre, apellido, correo, primerTel, dpi, pass);
             }
 
             if (exito) {

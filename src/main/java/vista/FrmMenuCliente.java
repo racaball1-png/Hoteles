@@ -57,14 +57,14 @@ public class FrmMenuCliente extends JFrame {
         lblBienvenida.setFont(new Font("Georgia", Font.BOLD, 20));
         lblBienvenida.setForeground(Color.WHITE);
 
-        // 1. Crear el botón de Cerrar Sesión
+        // Crear el botón de Cerrar Sesión
         JButton btnCerrarSesion = new JButton("Cerrar Sesión");
         btnCerrarSesion.setBackground(new Color(180, 50, 50));
         btnCerrarSesion.setForeground(Color.WHITE);
         btnCerrarSesion.setFocusPainted(false);
         btnCerrarSesion.setCursor(new Cursor(Cursor.HAND_CURSOR));
 
-        // 2. Asignar el evento al botón
+        // Asignar el evento
         btnCerrarSesion.addActionListener(e -> cerrarSesion());
 
         panelHeader.add(lblBienvenida, BorderLayout.WEST);
@@ -102,7 +102,6 @@ public class FrmMenuCliente extends JFrame {
         add(panelGrid, BorderLayout.CENTER);
     }
 
-    // Método para manejar la salida
     private void cerrarSesion() {
         int confirmacion = JOptionPane.showConfirmDialog(
             this, 
@@ -113,10 +112,18 @@ public class FrmMenuCliente extends JFrame {
         );
 
         if (confirmacion == JOptionPane.YES_OPTION) {
-            FrmLogin login = new FrmLogin();
-            login.setVisible(true);
-            login.setLocationRelativeTo(null);
-            this.dispose();
+            try {
+                FrmLogin login = new FrmLogin();
+                login.setVisible(true);
+                login.setLocationRelativeTo(null);
+                this.dispose();
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, 
+                    "Error al abrir la pantalla de inicio de sesión:\n" + ex.getMessage(), 
+                    "Error al cerrar sesión", 
+                    JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
+            }
         }
     }
 
