@@ -9,9 +9,11 @@ import modelo.UsuarioSesion;
 import modelo.UsuarioSesion.Rol;
 import com.google.gson.Gson;
 
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
 import java.io.IOException;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 @WebServlet("/api/auth/*")
 public class AuthServlet extends HttpServlet {
